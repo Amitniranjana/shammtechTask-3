@@ -529,15 +529,10 @@ body {
 @media (max-width: 767px) {
       .sidebar {
 display:block;
-  top: 0;
-  left: 0;
+  
   
   width: 250px;
-  z-index: 1001;
-  background: white;
-  overflow-y: auto;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  
       }
 
     
