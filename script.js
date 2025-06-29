@@ -11,14 +11,25 @@ let isMobileMenuOpen = false;
 // Initialize mobile menu
 function initMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
-    
+
     // Remove existing toggle if it exists
     if (mobileMenuToggle) {
         mobileMenuToggle.remove();
     }
-    
+
     // Check if we're on mobile
     if (window.innerWidth <= 768) {
+        // Apply mobile-specific sidebar styles
+        sidebar.style.position = 'fixed';
+        sidebar.style.top = '0';
+        sidebar.style.left = '0';
+        sidebar.style.height = '100vh';
+        sidebar.style.width = '250px';
+        sidebar.style.background = '#fff';
+        sidebar.style.zIndex = '1001';
+        sidebar.style.transition = 'transform 0.3s ease';
+        sidebar.style.overflowY = 'auto';
+
         // Create mobile menu toggle button
         mobileMenuToggle = document.createElement('button');
         mobileMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
@@ -45,10 +56,10 @@ function initMobileMenu() {
         sidebar.style.transform = 'translateX(-100%)';
         isMobileMenuOpen = false;
 
-        // Add click event listener
+        // Toggle button click
         mobileMenuToggle.addEventListener('click', toggleMobileMenu);
-        
-        // Close menu when clicking on nav items
+
+        // Close menu when clicking on nav items (on mobile)
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 if (window.innerWidth <= 768) {
@@ -56,25 +67,31 @@ function initMobileMenu() {
                 }
             });
         });
-        
+
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768 && 
-                isMobileMenuOpen && 
-                !sidebar.contains(e.target) && 
-                !mobileMenuToggle.contains(e.target)) {
+            if (
+                window.innerWidth <= 768 &&
+                isMobileMenuOpen &&
+                !sidebar.contains(e.target) &&
+                !mobileMenuToggle.contains(e.target)
+            ) {
                 closeMobileMenu();
             }
         });
+
     } else {
         // Desktop - ensure sidebar is visible
+        sidebar.style.position = '';
         sidebar.style.transform = 'translateX(0)';
+        sidebar.style.height = '';
+        sidebar.style.width = '';
+        sidebar.style.overflowY = '';
+        document.body.style.overflow = '';
     }
 }
 
 function toggleMobileMenu() {
-    const sidebar = document.querySelector('.sidebar');
-    
     if (isMobileMenuOpen) {
         closeMobileMenu();
     } else {
@@ -86,6 +103,7 @@ function openMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.style.transform = 'translateX(0)';
     mobileMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
+    document.body.style.overflow = 'hidden'; // lock scroll
     isMobileMenuOpen = true;
 }
 
@@ -93,6 +111,7 @@ function closeMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.style.transform = 'translateX(-100%)';
     mobileMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    document.body.style.overflow = ''; // unlock scroll
     isMobileMenuOpen = false;
 }
 
@@ -125,7 +144,7 @@ contentArea.addEventListener('scroll', () => {
     // Update progress bar
     scrollProgress.style.width = scrollPercentage + '%';
 
-    // Update active nav item based on scroll position
+    // Update active nav item
     let activeSection = null;
     sections.forEach((section, index) => {
         const rect = section.getBoundingClientRect();
@@ -143,7 +162,7 @@ contentArea.addEventListener('scroll', () => {
     }
 });
 
-// Add smooth hover effects and animations
+// Hover effect on service cards
 document.querySelectorAll('.service-card').forEach(card => {
     card.addEventListener('mouseenter', () => {
         card.style.transform = 'translateY(-10px) scale(1.02)';
@@ -194,19 +213,19 @@ function animateCounter(element, start, end, finalText) {
     }, 16);
 }
 
-// Add loading animation
+// Page load animation
 window.addEventListener('load', () => {
     document.body.style.opacity = '0';
     document.body.style.transition = 'opacity 0.5s ease-in-out';
     setTimeout(() => {
         document.body.style.opacity = '1';
     }, 100);
-    
-    // Initialize mobile menu after load
+
+    // Initialize mobile menu
     initMobileMenu();
 });
 
-// Add parallax effect to company logos
+// Parallax effect for company logos
 contentArea.addEventListener('scroll', () => {
     const logos = document.querySelectorAll('.company-logo');
     logos.forEach(logo => {
@@ -217,7 +236,7 @@ contentArea.addEventListener('scroll', () => {
     });
 });
 
-// Handle window resize
+// Recheck on window resize
 window.addEventListener('resize', () => {
     initMobileMenu();
 });
