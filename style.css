@@ -528,22 +528,19 @@ body {
 /* Mobile (320px - 767px) */
 @media (max-width: 767px) {
       .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 250px;
-    height: 100vh;
-    background: white;
-    z-index: 1001;
-    
-    transition: transform 0.3s ease;
-    overflow: auto;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px;
+  z-index: 1001;
+  background: white;
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+      }
 
-    .mobile-menu-toggle {
-        display: block;
-        position:fixed;
-    }
+    
 
     .mobile-menu-toggle {
     position: fixed;
