@@ -67,24 +67,24 @@ function initMobileMenu() {
         document.body.appendChild(mobileMenuToggle);
         document.body.appendChild(mobileMenuOverlay);
         
-        // Set sidebar styles for mobile - make it scroll independently
-        sidebar.style.cssText = `
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            height: 100vh !important;
-            width: 280px !important;
-            z-index: 1001 !important;
-            transform: translateX(-100%) !important;
-            transition: transform 0.3s ease !important;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch !important;
-            background: #ffffff !important;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
-            border-right: 1px solid #e0e0e0 !important;
-            padding: 20px !important;
-            box-sizing: border-box !important;
-        `;
+        // Set sidebar styles for mobile - add only mobile specific styles
+        sidebar.style.position = 'fixed';
+        sidebar.style.top = '0';
+        sidebar.style.left = '0';
+        sidebar.style.height = '100vh';
+        sidebar.style.width = '280px';
+        sidebar.style.zIndex = '1001';
+        sidebar.style.transform = 'translateX(-100%)';
+        sidebar.style.transition = 'transform 0.3s ease';
+        sidebar.style.overflowY = 'auto';
+        sidebar.style.webkitOverflowScrolling = 'touch';
+        
+        // Add background if not present
+        if (!sidebar.style.backgroundColor && !getComputedStyle(sidebar).backgroundColor.includes('rgb')) {
+            sidebar.style.backgroundColor = '#ffffff';
+        }
+        sidebar.style.boxShadow = '2px 0 10px rgba(0,0,0,0.1)';
+        sidebar.classList.add('mobile-sidebar-active');
         
         isMobileMenuOpen = false;
         
@@ -102,18 +102,19 @@ function initMobileMenu() {
         });
         
     } else {
-        // Desktop - reset sidebar styles
-        sidebar.style.cssText = `
-            position: relative !important;
-            transform: translateX(0) !important;
-            height: auto !important;
-            width: auto !important;
-            z-index: auto !important;
-            background: transparent !important;
-            box-shadow: none !important;
-            border: none !important;
-            padding: 0 !important;
-        `;
+        // Desktop - reset only mobile specific styles
+        sidebar.style.position = '';
+        sidebar.style.top = '';
+        sidebar.style.left = '';
+        sidebar.style.height = '';
+        sidebar.style.width = '';
+        sidebar.style.zIndex = '';
+        sidebar.style.transform = '';
+        sidebar.style.transition = '';
+        sidebar.style.overflowY = '';
+        sidebar.style.webkitOverflowScrolling = '';
+        sidebar.style.boxShadow = '';
+        sidebar.classList.remove('mobile-sidebar-active');
     }
 }
 
@@ -129,13 +130,13 @@ function openMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     
     // Show sidebar at current scroll position
-    sidebar.style.transform = 'translateX(0) !important';
+    sidebar.style.transform = 'translateX(0)';
     
     // Show overlay
     mobileMenuOverlay.style.opacity = '1';
     mobileMenuOverlay.style.visibility = 'visible';
     
-    // Update button icon with better styling
+    // Update button icon
     mobileMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
     mobileMenuToggle.style.background = 'linear-gradient(135deg, #ff6b6b, #ee5a24)';
     
@@ -146,7 +147,7 @@ function closeMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     
     // Hide sidebar
-    sidebar.style.transform = 'translateX(-100%) !important';
+    sidebar.style.transform = 'translateX(-100%)';
     
     // Hide overlay
     mobileMenuOverlay.style.opacity = '0';
