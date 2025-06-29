@@ -535,9 +535,9 @@ body {
     height: 100vh;
     background: white;
     z-index: 1001;
-    transform: translateX(-100%);
+    
     transition: transform 0.3s ease;
-    overflow-y: auto;
+    overflow: auto;
   }
 
     .mobile-menu-toggle {
