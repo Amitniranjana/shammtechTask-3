@@ -170,7 +170,7 @@ function openMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.style.transform = 'translateX(0)';
     sidebar.style.transition = 'transform 0.3s ease';
-    sidebar.scrollTop = 0; // <-- This ensures sidebar always opens at top
+    
     mobileMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
     document.body.style.overflow = 'hidden';
     isMobileMenuOpen = true;
