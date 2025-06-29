@@ -528,7 +528,7 @@ body {
 /* Mobile (320px - 767px) */
 @media (max-width: 767px) {
       .sidebar {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   height: 100vh;
