@@ -27,7 +27,6 @@ function initMobileMenu() {
         mobileMenuToggle = document.createElement('button');
         mobileMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
         mobileMenuToggle.className = 'mobile-menu-toggle';
-        mobileMenuToggle.setAttribute('aria-label', 'Toggle mobile menu');
         mobileMenuToggle.style.cssText = `
             position: fixed;
             top: 20px;
@@ -41,7 +40,7 @@ function initMobileMenu() {
             font-size: 18px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             width: 50px;
             height: 50px;
             display: flex;
@@ -58,18 +57,17 @@ function initMobileMenu() {
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.3);
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(2px);
+            transition: all 0.3s ease;
         `;
         
         document.body.appendChild(mobileMenuToggle);
         document.body.appendChild(mobileMenuOverlay);
         
-        // Set sidebar styles for mobile
+        // Set sidebar styles for mobile - make it scroll independently
         sidebar.style.cssText += `
             position: fixed;
             top: 0;
@@ -78,7 +76,7 @@ function initMobileMenu() {
             width: 280px;
             z-index: 1001;
             transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s ease;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         `;
@@ -98,18 +96,13 @@ function initMobileMenu() {
             });
         });
         
-        // Handle escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isMobileMenuOpen) {
-                closeMobileMenu();
-            }
-        });
-        
     } else {
         // Desktop - reset sidebar styles
-        sidebar.style.cssText = sidebar.style.cssText.replace(/position: fixed.*?overflow-scrolling: touch;/gs, '');
-        sidebar.style.transform = 'translateX(0)';
         sidebar.style.position = 'relative';
+        sidebar.style.transform = 'translateX(0)';
+        sidebar.style.height = 'auto';
+        sidebar.style.width = 'auto';
+        sidebar.style.zIndex = 'auto';
     }
 }
 
@@ -124,7 +117,7 @@ function toggleMobileMenu() {
 function openMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     
-    // Animate sidebar in
+    // Show sidebar at current scroll position
     sidebar.style.transform = 'translateX(0)';
     
     // Show overlay
@@ -133,10 +126,8 @@ function openMobileMenu() {
     
     // Update button icon
     mobileMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
-    mobileMenuToggle.style.transform = 'rotate(90deg)';
     
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
+    // DON'T prevent body scroll - let main content scroll normally
     
     isMobileMenuOpen = true;
 }
@@ -144,7 +135,7 @@ function openMobileMenu() {
 function closeMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     
-    // Animate sidebar out
+    // Hide sidebar
     sidebar.style.transform = 'translateX(-100%)';
     
     // Hide overlay
@@ -153,10 +144,6 @@ function closeMobileMenu() {
     
     // Update button icon
     mobileMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    mobileMenuToggle.style.transform = 'rotate(0deg)';
-    
-    // Restore body scroll
-    document.body.style.overflow = '';
     
     isMobileMenuOpen = false;
 }
@@ -184,22 +171,10 @@ navItems.forEach(item => {
 });
 
 // Update active nav item and progress bar on scroll
-let scrollTimeout;
 contentArea.addEventListener('scroll', () => {
-    // Throttle scroll events for better performance
-    if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-    }
-    
-    scrollTimeout = setTimeout(() => {
-        updateScrollIndicators();
-    }, 10);
-});
-
-function updateScrollIndicators() {
     const scrollTop = contentArea.scrollTop;
     const scrollHeight = contentArea.scrollHeight - contentArea.clientHeight;
-    const scrollPercentage = Math.min((scrollTop / scrollHeight) * 100, 100);
+    const scrollPercentage = (scrollTop / scrollHeight) * 100;
     
     // Update progress bar
     if (scrollProgress) {
@@ -210,151 +185,96 @@ function updateScrollIndicators() {
     let activeSection = null;
     sections.forEach((section, index) => {
         const rect = section.getBoundingClientRect();
-        const contentRect = contentArea.getBoundingClientRect();
-        const sectionTop = rect.top - contentRect.top + scrollTop;
+        const sectionTop = rect.top + scrollTop;
         const sectionHeight = section.offsetHeight;
         
-        if (scrollTop >= sectionTop - 150 && scrollTop < sectionTop + sectionHeight - 150) {
+        if (scrollTop >= sectionTop - 100 && scrollTop < sectionTop + sectionHeight - 100) {
             activeSection = index;
         }
     });
     
-    if (activeSection !== null && navItems[activeSection]) {
+    if (activeSection !== null) {
         navItems.forEach(item => item.classList.remove('active'));
         navItems[activeSection].classList.add('active');
     }
-}
-
-// Enhanced hover effects for service cards
-function initServiceCardEffects() {
-    document.querySelectorAll('.service-card').forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-10px) scale(1.02)';
-            card.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'translateY(0) scale(1)';
-            card.style.boxShadow = '';
-        });
-    });
-}
-
-// Improved stats animation with intersection observer
-function initStatsAnimation() {
-    const observerOptions = {
-        threshold: 0.3,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const statsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !entry.target.hasAttribute('data-animated')) {
-                entry.target.setAttribute('data-animated', 'true');
-                const statNumbers = entry.target.querySelectorAll('.stat-number');
-                statNumbers.forEach((stat, index) => {
-                    setTimeout(() => {
-                        animateStatNumber(stat);
-                    }, index * 200);
-                });
-            }
-        });
-    }, observerOptions);
-    
-    document.querySelectorAll('.stats-section').forEach(section => {
-        statsObserver.observe(section);
-    });
-}
-
-function animateStatNumber(element) {
-    const finalValue = element.textContent;
-    const numericValue = parseInt(finalValue.replace(/[^\d]/g, ''));
-    
-    if (isNaN(numericValue)) return;
-    
-    const duration = 2000;
-    const steps = 60;
-    const increment = numericValue / steps;
-    let current = 0;
-    let step = 0;
-    
-    const timer = setInterval(() => {
-        step++;
-        current = Math.min(current + increment, numericValue);
-        
-        if (step >= steps || current >= numericValue) {
-            element.textContent = finalValue;
-            clearInterval(timer);
-        } else {
-            const suffix = finalValue.replace(/[\d.]/g, '');
-            element.textContent = Math.floor(current) + suffix;
-        }
-    }, duration / steps);
-}
-
-// Fixed parallax effect - only for content area logos, not sidebar
-function initParallaxEffect() {
-    let parallaxTimeout;
-    
-    contentArea.addEventListener('scroll', () => {
-        if (parallaxTimeout) {
-            clearTimeout(parallaxTimeout);
-        }
-        
-        parallaxTimeout = setTimeout(() => {
-            // Only apply parallax to logos that are NOT in the sidebar
-            const contentLogos = contentArea.querySelectorAll('.company-logo:not(.sidebar .company-logo)');
-            
-            contentLogos.forEach(logo => {
-                const rect = logo.getBoundingClientRect();
-                const speed = 0.3;
-                const yPos = -(rect.top * speed);
-                
-                // Use transform3d for better performance
-                logo.style.transform = `translate3d(0, ${yPos}px, 0) rotate(${yPos * 0.05}deg)`;
-            });
-        }, 10);
-    });
-}
-
-// Enhanced loading animation
-function initLoadingAnimation() {
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-    
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            document.body.style.opacity = '1';
-            
-            // Initialize all components after load
-            initMobileMenu();
-            initServiceCardEffects();
-            initStatsAnimation();
-            initParallaxEffect();
-        }, 100);
-    });
-}
-
-// Handle window resize with debouncing
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    if (resizeTimeout) {
-        clearTimeout(resizeTimeout);
-    }
-    
-    resizeTimeout = setTimeout(() => {
-        initMobileMenu();
-        
-        // Close mobile menu if window becomes desktop size
-        if (window.innerWidth > 768 && isMobileMenuOpen) {
-            closeMobileMenu();
-        }
-    }, 250);
 });
 
-// Initialize everything when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLoadingAnimation);
-} else {
-    initLoadingAnimation();
+// Add smooth hover effects and animations
+document.querySelectorAll('.service-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-10px) scale(1.02)';
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0) scale(1)';
+    });
+});
+
+// Animate stats on scroll
+const observerOptions = {
+    threshold: 0.5,
+    rootMargin: '0px'
+};
+
+const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const statNumbers = entry.target.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const finalValue = stat.textContent;
+                const numericValue = parseInt(finalValue.replace(/[^\d]/g, ''));
+                animateCounter(stat, 0, numericValue, finalValue);
+            });
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.stats-section').forEach(section => {
+    statsObserver.observe(section);
+});
+
+function animateCounter(element, start, end, finalText) {
+    const duration = 2000;
+    const increment = (end - start) / (duration / 16);
+    let current = start;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= end) {
+            element.textContent = finalText;
+            clearInterval(timer);
+        } else {
+            const suffix = finalText.replace(/[\d.]/g, '');
+            element.textContent = Math.floor(current) + suffix;
+        }
+    }, 16);
 }
+
+// Add loading animation
+window.addEventListener('load', () => {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease-in-out';
+    setTimeout(() => {
+        document.body.style.opacity = '1';
+    }, 100);
+    
+    // Initialize mobile menu after load
+    initMobileMenu();
+});
+
+// FIXED: Apply parallax effect only to content logos, not sidebar logos
+contentArea.addEventListener('scroll', () => {
+    // Only select logos that are inside contentArea, not in sidebar
+    const contentLogos = contentArea.querySelectorAll('.company-logo');
+    contentLogos.forEach(logo => {
+        const rect = logo.getBoundingClientRect();
+        const speed = 0.5;
+        const yPos = -(rect.top * speed);
+        logo.style.transform = `translateY(${yPos}px) rotate(${yPos * 0.1}deg)`;
+    });
+});
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    initMobileMenu();
+});
