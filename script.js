@@ -68,17 +68,22 @@ function initMobileMenu() {
         document.body.appendChild(mobileMenuOverlay);
         
         // Set sidebar styles for mobile - make it scroll independently
-        sidebar.style.cssText += `
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: 280px;
-            z-index: 1001;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+        sidebar.style.cssText = `
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100vh !important;
+            width: 280px !important;
+            z-index: 1001 !important;
+            transform: translateX(-100%) !important;
+            transition: transform 0.3s ease !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            background: #ffffff !important;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
+            border-right: 1px solid #e0e0e0 !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
         `;
         
         isMobileMenuOpen = false;
@@ -98,11 +103,17 @@ function initMobileMenu() {
         
     } else {
         // Desktop - reset sidebar styles
-        sidebar.style.position = 'relative';
-        sidebar.style.transform = 'translateX(0)';
-        sidebar.style.height = 'auto';
-        sidebar.style.width = 'auto';
-        sidebar.style.zIndex = 'auto';
+        sidebar.style.cssText = `
+            position: relative !important;
+            transform: translateX(0) !important;
+            height: auto !important;
+            width: auto !important;
+            z-index: auto !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+        `;
     }
 }
 
@@ -118,16 +129,15 @@ function openMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     
     // Show sidebar at current scroll position
-    sidebar.style.transform = 'translateX(0)';
+    sidebar.style.transform = 'translateX(0) !important';
     
     // Show overlay
     mobileMenuOverlay.style.opacity = '1';
     mobileMenuOverlay.style.visibility = 'visible';
     
-    // Update button icon
+    // Update button icon with better styling
     mobileMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
-    
-    // DON'T prevent body scroll - let main content scroll normally
+    mobileMenuToggle.style.background = 'linear-gradient(135deg, #ff6b6b, #ee5a24)';
     
     isMobileMenuOpen = true;
 }
@@ -136,7 +146,7 @@ function closeMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     
     // Hide sidebar
-    sidebar.style.transform = 'translateX(-100%)';
+    sidebar.style.transform = 'translateX(-100%) !important';
     
     // Hide overlay
     mobileMenuOverlay.style.opacity = '0';
@@ -144,6 +154,7 @@ function closeMobileMenu() {
     
     // Update button icon
     mobileMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    mobileMenuToggle.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
     
     isMobileMenuOpen = false;
 }
